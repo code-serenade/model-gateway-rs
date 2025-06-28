@@ -1,0 +1,20 @@
+[package]
+name = "model-gateway-rs"
+version = "0.1.0"
+edition = "2024"
+description = "A Rust library for model gateway services, providing traits and SDKs for various AI models."
+authors = ["code-serenade <gamesworldcraft@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/arthasyou/model-gateway-rs"
+readme = "README.md"
+keywords = ["AI", "model", "gateway", "LLM", "machine learning"]
+categories = ["algorithms", "api-bindings"]
+homepage = "https://github.com/arthasyou/model-gateway-rs"
+documentation = "https://docs.rs/model-gateway-rs"
+
+[dependencies]
+async-trait = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+service_utils_rs = { version = "0.3.20", features = ["request"] }
+thiserror = "2"
