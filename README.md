@@ -22,7 +22,7 @@ src/
 ## Usage
 Add to your `Cargo.toml`:
 ```toml
-model-gateway = { git = "https://github.com/your-org/model-gateway-rs" }
+model-gateway = { git = "https://github.com/code-serenade/model-gateway-rs" }
 ```
 
 Example:
