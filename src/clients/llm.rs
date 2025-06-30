@@ -1,17 +1,17 @@
-use crate::error::Result;
 use async_trait::async_trait;
 use service_utils_rs::utils::ByteStream;
 
 use crate::{
+    error::Result,
     sdk::openai::{ChatMessage, ChatResponse, OpenAIClient},
     traits::{ModelClient, StreamModelClient},
 };
 
-pub struct OpenAITextClient {
+pub struct LlmClient {
     pub inner: OpenAIClient,
 }
 
-impl OpenAITextClient {
+impl LlmClient {
     pub fn new(api_key: &str, base_url: &str, model: &str) -> Result<Self> {
         let inner = OpenAIClient::new(api_key, base_url, model)?;
         Ok(Self { inner })
@@ -19,7 +19,7 @@ impl OpenAITextClient {
 }
 
 #[async_trait]
-impl ModelClient for OpenAITextClient {
+impl ModelClient for LlmClient {
     type Input = Vec<ChatMessage>;
     type Output = ChatResponse;
 
@@ -30,7 +30,7 @@ impl ModelClient for OpenAITextClient {
 }
 
 #[async_trait]
-impl StreamModelClient for OpenAITextClient {
+impl StreamModelClient for LlmClient {
     type Input = Vec<ChatMessage>;
 
     async fn infer_stream(&self, input: Self::Input) -> Result<ByteStream> {
