@@ -1,6 +1,6 @@
 [package]
 name = "model-gateway-rs"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "A Rust library for model gateway services, providing traits and SDKs for various AI models."
 authors = ["code-serenade <gamesworldcraft@gmail.com>"]
