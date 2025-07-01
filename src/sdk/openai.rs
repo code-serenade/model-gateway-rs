@@ -1,6 +1,8 @@
-use crate::error::Result;
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use service_utils_rs::utils::{ByteStream, Request};
+
+use crate::{error::Result, sdk::ModelSDK};
 
 /// Role in chat messages.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12,7 +14,7 @@ pub enum Role {
 }
 
 /// Single chat message.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatMessage {
     pub role: Role,
     pub content: String,
@@ -25,6 +27,26 @@ impl ChatMessage {
             content: content.to_string(),
         }
     }
+    pub fn assistant(content: &str) -> Self {
+        Self {
+            role: Role::Assistant,
+            content: content.to_string(),
+        }
+    }
+    pub fn system(content: &str) -> Self {
+        Self {
+            role: Role::System,
+            content: content.to_string(),
+        }
+    }
+}
+
+pub struct ChatMessages(Vec<ChatMessage>);
+
+impl From<String> for ChatMessages {
+    fn from(content: String) -> Self {
+        ChatMessages(vec![ChatMessage::user(content.as_str())])
+    }
 }
 
 /// Request body for chat completion.
@@ -32,14 +54,8 @@ impl ChatMessage {
 #[derive(Debug, Deserialize)]
 pub struct ChatChoice {
     pub index: u32,
-    pub message: ChatMessageResponse,
+    pub message: ChatMessage,
     pub finish_reason: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ChatMessageResponse {
-    pub role: Role,
-    pub content: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -97,12 +113,18 @@ impl OpenAIClient {
             model: model.to_string(),
         })
     }
+}
+
+#[async_trait]
+impl ModelSDK for OpenAIClient {
+    type Input = ChatMessages;
+    type Output = ChatResponse;
 
     /// Send a chat request and get full response.
-    pub async fn chat_once(&self, messages: Vec<ChatMessage>) -> Result<ChatResponse> {
+    async fn chat_once(&self, messages: Self::Input) -> Result<Self::Output> {
         let body = ChatRequest {
             model: self.model.clone(),
-            messages,
+            messages: messages.0,
             stream: None,
             temperature: None,
         };
@@ -116,10 +138,10 @@ impl OpenAIClient {
     }
 
     /// Send a chat request and get response stream (SSE).
-    pub async fn chat_stream(&self, messages: Vec<ChatMessage>) -> Result<ByteStream> {
+    async fn chat_stream(&self, messages: Self::Input) -> Result<ByteStream> {
         let body = ChatRequest {
             model: self.model.clone(),
-            messages,
+            messages: messages.0,
             stream: Some(true),
             temperature: None,
         };

@@ -3,37 +3,39 @@ use service_utils_rs::utils::ByteStream;
 
 use crate::{
     error::Result,
-    sdk::openai::{ChatMessage, ChatResponse, OpenAIClient},
+    sdk::ModelSDK,
     traits::{ModelClient, StreamModelClient},
 };
 
-pub struct LlmClient {
-    pub inner: OpenAIClient,
+pub struct LlmClient<T> {
+    pub inner: T,
 }
 
-impl LlmClient {
-    pub fn new(api_key: &str, base_url: &str, model: &str) -> Result<Self> {
-        let inner = OpenAIClient::new(api_key, base_url, model)?;
-        Ok(Self { inner })
+impl<T> LlmClient<T> {
+    pub fn new(inner: T) -> Self {
+        Self { inner }
     }
 }
 
 #[async_trait]
-impl ModelClient for LlmClient {
-    type Input = Vec<ChatMessage>;
-    type Output = ChatResponse;
-
-    async fn infer(&self, input: Self::Input) -> Result<Self::Output> {
+impl<T, I, O> ModelClient<I, O> for LlmClient<T>
+where
+    T: ModelSDK<Input = I, Output = O> + Sync + Send,
+    I: Sync + Send + 'static,
+{
+    async fn infer(&self, input: I) -> Result<O> {
         let resp = self.inner.chat_once(input).await?;
         Ok(resp)
     }
 }
 
 #[async_trait]
-impl StreamModelClient for LlmClient {
-    type Input = Vec<ChatMessage>;
-
-    async fn infer_stream(&self, input: Self::Input) -> Result<ByteStream> {
+impl<T, I> StreamModelClient<I> for LlmClient<T>
+where
+    T: ModelSDK<Input = I> + Sync + Send,
+    I: Sync + Send + 'static,
+{
+    async fn infer_stream(&self, input: I) -> Result<ByteStream> {
         let stream = self.inner.chat_stream(input).await?;
         Ok(stream)
     }
