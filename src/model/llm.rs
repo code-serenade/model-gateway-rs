@@ -45,6 +45,12 @@ impl From<String> for ChatMessages {
     }
 }
 
+impl From<Vec<ChatMessage>> for ChatMessages {
+    fn from(messages: Vec<ChatMessage>) -> Self {
+        ChatMessages(messages)
+    }
+}
+
 /// Request body for chat completion.
 
 #[derive(Debug, Deserialize)]
