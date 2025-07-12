@@ -15,7 +15,7 @@ pub struct OpenAIClient {
 
 impl OpenAIClient {
     pub fn new(api_key: &str, base_url: &str, model: &str) -> Result<Self> {
-        let mut request = Request::new();
+        let mut request = Request::with_timeout(60)?;
         request.set_base_url(base_url)?;
         request.set_default_headers(vec![
             ("Content-Type", "application/json".to_string()),
