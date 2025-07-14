@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use service_utils_rs::utils::{ByteStream, Request};
+use toolcraft::request::{ByteStream, Request};
 
 use crate::{
     error::Result,
@@ -15,7 +15,7 @@ pub struct OpenAIClient {
 
 impl OpenAIClient {
     pub fn new(api_key: &str, base_url: &str, model: &str) -> Result<Self> {
-        let mut request = Request::with_timeout(60)?;
+        let mut request = Request::new()?;
         request.set_base_url(base_url)?;
         request.set_default_headers(vec![
             ("Content-Type", "application/json".to_string()),
