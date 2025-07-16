@@ -1,9 +1,10 @@
+pub mod ollama;
+pub mod openai;
+
 use async_trait::async_trait;
 use toolcraft::request::ByteStream;
 
 use crate::error::Result;
-
-pub mod openai;
 
 #[async_trait]
 pub trait ModelSDK {

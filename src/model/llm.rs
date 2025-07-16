@@ -51,47 +51,28 @@ impl From<Vec<ChatMessage>> for ChatMessages {
     }
 }
 
-/// Request body for chat completion.
-
-#[derive(Debug, Deserialize)]
-pub struct ChatChoice {
-    pub index: u32,
-    pub message: ChatMessage,
-    pub finish_reason: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ChatUsage {
-    pub prompt_tokens: u32,
-    pub completion_tokens: u32,
-    pub total_tokens: u32,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct ChatRequest {
-    pub model: String,
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LlmInput {
     pub messages: Vec<ChatMessage>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stream: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub temperature: Option<f32>,
+    pub max_tokens: Option<u32>,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct ChatResponse {
-    pub id: String,
-    pub object: String,
-    pub created: u64,
-    pub model: String,
-    pub choices: Vec<ChatChoice>,
-    pub usage: Option<ChatUsage>,
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LlmOutput {
+    pub message: ChatMessage,
+    pub usage: Option<u32>, // Placeholder for token usage
 }
 
-impl ChatResponse {
-    /// Get the first choice's message content.
-    pub fn first_message(&self) -> Option<String> {
-        self.choices
-            .first()
-            .map(|choice| choice.message.content.clone())
+impl LlmOutput {
+    pub fn get_message(&self) -> &ChatMessage {
+        &self.message
+    }
+
+    pub fn get_content(&self) -> &str {
+        &self.message.content
+    }
+
+    pub fn get_usage(&self) -> Option<u32> {
+        self.usage
     }
 }
