@@ -4,7 +4,7 @@ use toolcraft::request::{ByteStream, Request};
 use crate::{
     error::Result,
     model::{
-        llm::LlmInput,
+        llm::{LlmInput, LlmOutput},
         openai::{OpenAiChatRequest, OpenAiChatResponse},
     },
     sdk::ModelSDK,
@@ -34,7 +34,7 @@ impl OpenAIClient {
 #[async_trait]
 impl ModelSDK for OpenAIClient {
     type Input = LlmInput;
-    type Output = OpenAiChatResponse;
+    type Output = LlmOutput;
 
     /// Send a chat request and get full response.
     async fn chat_once(&self, input: Self::Input) -> Result<Self::Output> {
@@ -50,7 +50,7 @@ impl ModelSDK for OpenAIClient {
             .post("chat/completions", &payload, None)
             .await?;
         let json: OpenAiChatResponse = response.json().await?;
-        Ok(json)
+        Ok(json.into())
     }
 
     /// Send a chat request and get response stream (SSE).

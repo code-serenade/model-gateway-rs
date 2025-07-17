@@ -59,17 +59,20 @@ pub struct LlmInput {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LlmOutput {
-    pub message: ChatMessage,
+    pub message: Option<ChatMessage>,
     pub usage: Option<u32>, // Placeholder for token usage
 }
 
 impl LlmOutput {
-    pub fn get_message(&self) -> &ChatMessage {
-        &self.message
+    pub fn get_message(&self) -> Option<&ChatMessage> {
+        self.message.as_ref()
     }
 
     pub fn get_content(&self) -> &str {
-        &self.message.content
+        match &self.message {
+            Some(msg) => &msg.content,
+            None => "",
+        }
     }
 
     pub fn get_usage(&self) -> Option<u32> {

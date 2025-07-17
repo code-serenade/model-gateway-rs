@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::model::llm::ChatMessage;
+use crate::model::llm::{ChatMessage, LlmOutput};
 
 /// Request body for chat completion.
 
@@ -40,10 +40,15 @@ pub struct OpenAiChatResponse {
 
 impl OpenAiChatResponse {
     /// Get the first choice's message content, or an empty string if not available.
-    pub fn first_message(&self) -> String {
-        self.choices
-            .first()
-            .map(|choice| choice.message.content.clone())
-            .unwrap_or_else(|| "".to_string())
+    pub fn first_message(&self) -> Option<ChatMessage> {
+        self.choices.first().map(|choice| choice.message.clone())
+    }
+}
+
+impl From<OpenAiChatResponse> for LlmOutput {
+    fn from(response: OpenAiChatResponse) -> Self {
+        let message = response.first_message();
+        let usage = response.usage.map(|u| u.total_tokens);
+        LlmOutput { message, usage }
     }
 }

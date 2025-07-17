@@ -1182,7 +1182,7 @@ dependencies = [
 
 [[package]]
 name = "model-gateway-rs"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "async-trait",
  "serde",
