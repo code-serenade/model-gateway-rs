@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use toolcraft::request::{ByteStream, Request};
+use toolcraft_request::{ByteStream, Request};
 
 use crate::{
     error::Result,
@@ -11,18 +11,18 @@ use crate::{
 };
 
 /// ChatCompletion client using your wrapped Request.
-pub struct OpenAIClient {
+pub struct OpenAiSdk {
     request: Request,
     model: String,
 }
 
-impl OpenAIClient {
+impl OpenAiSdk {
     pub fn new(api_key: &str, base_url: &str, model: &str) -> Result<Self> {
         let mut request = Request::new()?;
         request.set_base_url(base_url)?;
         request.set_default_headers(vec![
             ("Content-Type", "application/json".to_string()),
-            ("Authorization", format!("Bearer {}", api_key)),
+            ("Authorization", format!("Bearer {api_key}")),
         ])?;
         Ok(Self {
             request,
@@ -32,7 +32,7 @@ impl OpenAIClient {
 }
 
 #[async_trait]
-impl ModelSDK for OpenAIClient {
+impl ModelSDK for OpenAiSdk {
     type Input = LlmInput;
     type Output = LlmOutput;
 

@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use toolcraft::request::{ByteStream, Request};
+use toolcraft_request::{ByteStream, Request};
 
 use crate::{
     error::Result,
@@ -11,12 +11,12 @@ use crate::{
 };
 
 /// ChatCompletion client using your wrapped Request.
-pub struct OllamaClient {
+pub struct OllamaSdk {
     request: Request,
     model: String,
 }
 
-impl OllamaClient {
+impl OllamaSdk {
     pub fn new(base_url: &str, model: &str) -> Result<Self> {
         let mut request = Request::new()?;
         request.set_base_url(base_url)?;
@@ -29,7 +29,7 @@ impl OllamaClient {
 }
 
 #[async_trait]
-impl ModelSDK for OllamaClient {
+impl ModelSDK for OllamaSdk {
     type Input = LlmInput;
     type Output = OllamaChatResponse;
 

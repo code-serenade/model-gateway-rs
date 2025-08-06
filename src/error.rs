@@ -11,7 +11,7 @@ pub enum Error {
     SerdeJsonError(#[from] serde_json::Error),
 
     #[error("config error: {0}")]
-    ToolError(#[from] toolcraft::error::Error),
+    ToolError(#[from] toolcraft_request::error::Error),
 }
 
 pub type Result<T> = core::result::Result<T, Error>;

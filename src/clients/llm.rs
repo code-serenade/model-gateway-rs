@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use toolcraft::request::ByteStream;
+use toolcraft_request::ByteStream;
 
 use crate::{
     error::Result,
