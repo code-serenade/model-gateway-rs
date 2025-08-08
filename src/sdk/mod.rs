@@ -1,3 +1,4 @@
+pub mod doubao_vision;
 pub mod ollama;
 pub mod openai;
 

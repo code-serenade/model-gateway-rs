@@ -36,19 +36,23 @@ pub struct VideoUrl {
 }
 
 /// Message structure for Doubao Vision
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DoubaoVisionMessage {
-    pub role: Role,
-    #[serde(flatten)]
-    pub content: DoubaoMessageContent,
+#[derive(Debug, Clone, Serialize)]
+#[serde(untagged)]
+pub enum DoubaoVisionMessage {
+    Text {
+        role: Role,
+        content: String,
+    },
+    Multimodal {
+        role: Role,
+        content: Vec<MessageContent>,
+    },
 }
 
-/// Content wrapper to handle both simple string and multimodal content
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum DoubaoMessageContent {
-    Text(String),
-    Multimodal(Vec<MessageContent>),
+#[derive(Debug, Clone, Deserialize)]
+pub struct DoubaoVisionMessageResponse {
+    pub role: Role,
+    pub content: String,
 }
 
 /// Thinking mode configuration
@@ -97,7 +101,7 @@ pub struct DoubaoChoice {
     pub logprobs: Option<serde_json::Value>,
 }
 
-/// Response message structure
+/// Response message structure  
 #[derive(Debug, Clone, Deserialize)]
 pub struct DoubaoResponseMessage {
     pub role: Role,
@@ -219,34 +223,35 @@ impl DoubaoVisionRequest {
 }
 
 impl DoubaoVisionMessage {
-    /// Create a message with specified role and text content
-    fn text_with_role(role: Role, content: impl Into<String>) -> Self {
-        Self {
-            role,
-            content: DoubaoMessageContent::Text(content.into()),
-        }
-    }
-
     /// Create a user text message
     pub fn user(content: impl Into<String>) -> Self {
-        Self::text_with_role(Role::User, content)
+        Self::Text {
+            role: Role::User,
+            content: content.into(),
+        }
     }
 
     /// Create an assistant message
     pub fn assistant(content: impl Into<String>) -> Self {
-        Self::text_with_role(Role::Assistant, content)
+        Self::Text {
+            role: Role::Assistant,
+            content: content.into(),
+        }
     }
 
     /// Create a system message
     pub fn system(content: impl Into<String>) -> Self {
-        Self::text_with_role(Role::System, content)
+        Self::Text {
+            role: Role::System,
+            content: content.into(),
+        }
     }
 
     /// Create a user message with image
     pub fn with_image(text: impl Into<String>, image_url: impl Into<String>) -> Self {
-        Self {
+        Self::Multimodal {
             role: Role::User,
-            content: DoubaoMessageContent::Multimodal(vec![
+            content: vec![
                 MessageContent::ImageUrl {
                     image_url: ImageUrl {
                         url: image_url.into(),
@@ -254,7 +259,7 @@ impl DoubaoVisionMessage {
                     },
                 },
                 MessageContent::Text { text: text.into() },
-            ]),
+            ],
         }
     }
 
@@ -264,9 +269,9 @@ impl DoubaoVisionMessage {
         image_url: impl Into<String>,
         detail: impl Into<String>,
     ) -> Self {
-        Self {
+        Self::Multimodal {
             role: Role::User,
-            content: DoubaoMessageContent::Multimodal(vec![
+            content: vec![
                 MessageContent::ImageUrl {
                     image_url: ImageUrl {
                         url: image_url.into(),
@@ -274,22 +279,22 @@ impl DoubaoVisionMessage {
                     },
                 },
                 MessageContent::Text { text: text.into() },
-            ]),
+            ],
         }
     }
 
     /// Create a user message with video
     pub fn with_video(text: impl Into<String>, video_url: impl Into<String>) -> Self {
-        Self {
+        Self::Multimodal {
             role: Role::User,
-            content: DoubaoMessageContent::Multimodal(vec![
+            content: vec![
                 MessageContent::VideoUrl {
                     video_url: VideoUrl {
                         url: video_url.into(),
                     },
                 },
                 MessageContent::Text { text: text.into() },
-            ]),
+            ],
         }
     }
 
@@ -304,17 +309,17 @@ impl DoubaoVisionMessage {
 
         contents.push(MessageContent::Text { text: text.into() });
 
-        Self {
+        Self::Multimodal {
             role: Role::User,
-            content: DoubaoMessageContent::Multimodal(contents),
+            content: contents,
         }
     }
 
     /// Create a user message with text first, then image
     pub fn with_text_then_image(text: impl Into<String>, image_url: impl Into<String>) -> Self {
-        Self {
+        Self::Multimodal {
             role: Role::User,
-            content: DoubaoMessageContent::Multimodal(vec![
+            content: vec![
                 MessageContent::Text { text: text.into() },
                 MessageContent::ImageUrl {
                     image_url: ImageUrl {
@@ -322,7 +327,7 @@ impl DoubaoVisionMessage {
                         detail: None,
                     },
                 },
-            ]),
+            ],
         }
     }
 }
@@ -408,11 +413,11 @@ mod tests {
     #[test]
     fn test_create_user_message() {
         let msg = DoubaoVisionMessage::user("Hello");
-        assert!(matches!(msg.role, Role::User));
-        if let DoubaoMessageContent::Text(content) = msg.content {
+        if let DoubaoVisionMessage::Text { role, content } = msg {
+            assert!(matches!(role, Role::User));
             assert_eq!(content, "Hello");
         } else {
-            panic!("Expected text content");
+            panic!("Expected text message");
         }
     }
 
@@ -422,11 +427,11 @@ mod tests {
             "What's in this image?",
             "https://example.com/image.jpg",
         );
-        assert!(matches!(msg.role, Role::User));
-        if let DoubaoMessageContent::Multimodal(contents) = msg.content {
-            assert_eq!(contents.len(), 2);
+        if let DoubaoVisionMessage::Multimodal { role, content } = msg {
+            assert!(matches!(role, Role::User));
+            assert_eq!(content.len(), 2);
         } else {
-            panic!("Expected multimodal content");
+            panic!("Expected multimodal message");
         }
     }
 
@@ -439,11 +444,11 @@ mod tests {
                 "https://example.com/image2.jpg".to_string(),
             ],
         );
-        assert!(matches!(msg.role, Role::User));
-        if let DoubaoMessageContent::Multimodal(contents) = msg.content {
-            assert_eq!(contents.len(), 3); // 2 images + 1 text
+        if let DoubaoVisionMessage::Multimodal { role, content } = msg {
+            assert!(matches!(role, Role::User));
+            assert_eq!(content.len(), 3); // 2 images + 1 text
         } else {
-            panic!("Expected multimodal content");
+            panic!("Expected multimodal message");
         }
     }
 
@@ -466,6 +471,10 @@ mod tests {
     #[test]
     fn test_role_serialization() {
         let msg = DoubaoVisionMessage::assistant("I can help");
-        assert!(matches!(msg.role, Role::Assistant));
+        if let DoubaoVisionMessage::Text { role, content: _ } = msg {
+            assert!(matches!(role, Role::Assistant));
+        } else {
+            panic!("Expected text message");
+        }
     }
 }
