@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use toolcraft_request::{ByteStream, Request};
+use toolcraft_request::{ByteStream, HeaderMap, Request};
 
 use crate::{
     error::Result,
@@ -20,10 +20,11 @@ impl DoubaoVisionSdk {
     pub fn new(api_key: &str, base_url: &str, model: &str) -> Result<Self> {
         let mut request = Request::new()?;
         request.set_base_url(base_url)?;
-        request.set_default_headers(vec![
-            ("Content-Type", "application/json".to_string()),
-            ("Authorization", format!("Bearer {api_key}")),
-        ])?;
+        let mut headers = HeaderMap::new();
+        headers.insert("Content-Type", "application/json".to_string())?;
+        headers.insert("Accept", "application/json".to_string())?;
+        headers.insert("Authorization", format!("Bearer {api_key}"))?;
+        request.set_default_headers(headers);
         Ok(Self {
             request,
             model: model.to_string(),

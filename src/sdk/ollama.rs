@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use toolcraft_request::{ByteStream, Request};
+use toolcraft_request::{ByteStream, HeaderMap, Request};
 
 use crate::{
     error::Result,
@@ -20,7 +20,10 @@ impl OllamaSdk {
     pub fn new(base_url: &str, model: &str) -> Result<Self> {
         let mut request = Request::new()?;
         request.set_base_url(base_url)?;
-        request.set_default_headers(vec![("Content-Type", "application/json".to_string())])?;
+        let mut headers = HeaderMap::new();
+        headers.insert("Content-Type", "application/json".to_string())?;
+        headers.insert("Accept", "application/json".to_string())?;
+        request.set_default_headers(headers);
         Ok(Self {
             request,
             model: model.to_string(),

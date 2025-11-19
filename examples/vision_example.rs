@@ -6,7 +6,7 @@ use model_gateway_rs::{
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the SDK with your API key and base URL
-    let api_key = "284423aa-0a73-4d7c-add5-31998942a3fd";
+    let api_key = "some keys";
     let base_url = "https://ark.cn-beijing.volces.com/api/v3";
 
     // Create the DoubaoVision SDK
