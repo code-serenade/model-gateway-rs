@@ -38,7 +38,7 @@ pub struct VisionUsage {
 
 impl From<DoubaoVisionResponse> for VisionOutput {
     fn from(response: DoubaoVisionResponse) -> Self {
-        let content = response.first_content().unwrap_or("").to_string();
+        let content = response.first_content().unwrap_or_default();
         let reasoning_content = response.reasoning_content().map(String::from);
 
         let usage = response.usage.as_ref().map(|u| VisionUsage {

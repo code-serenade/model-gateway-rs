@@ -23,7 +23,9 @@ impl DoubaoVisionSdk {
         let mut headers = HeaderMap::new();
         headers.insert("Content-Type", "application/json".to_string())?;
         headers.insert("Accept", "application/json".to_string())?;
-        headers.insert("Authorization", format!("Bearer {api_key}"))?;
+        if !api_key.is_empty() {
+            headers.insert("Authorization", format!("Bearer {api_key}"))?;
+        }
         request.set_default_headers(headers);
         Ok(Self {
             request,

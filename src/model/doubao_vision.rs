@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 use crate::model::role::Role;
 
@@ -105,7 +106,7 @@ pub struct DoubaoChoice {
 #[derive(Debug, Clone, Deserialize)]
 pub struct DoubaoResponseMessage {
     pub role: Role,
-    pub content: String,
+    pub content: Value,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning_content: Option<String>, // For thinking mode output
 }
@@ -339,8 +340,9 @@ impl DoubaoVisionResponse {
     }
 
     /// Get the first choice's content as string
-    pub fn first_content(&self) -> Option<&str> {
-        self.first_message().map(|msg| msg.content.as_str())
+    pub fn first_content(&self) -> Option<String> {
+        self.first_message()
+            .and_then(|msg| extract_content_text(&msg.content))
     }
 
     /// Get the reasoning content if available
@@ -368,6 +370,48 @@ impl DoubaoVisionResponse {
 }
 
 // ============ Helper Functions ============
+
+fn extract_content_text(value: &Value) -> Option<String> {
+    match value {
+        Value::String(s) => {
+            let trimmed = s.trim();
+            if trimmed.is_empty() {
+                None
+            } else {
+                Some(trimmed.to_string())
+            }
+        }
+        Value::Array(items) => {
+            let mut parts = Vec::new();
+            for item in items {
+                if let Some(text) = item
+                    .get("text")
+                    .and_then(Value::as_str)
+                    .map(|s| s.trim())
+                {
+                    if !text.is_empty() {
+                        parts.push(text.to_string());
+                        continue;
+                    }
+                }
+
+                if let Some(content) = item.get("content").and_then(Value::as_str) {
+                    let trimmed = content.trim();
+                    if !trimmed.is_empty() {
+                        parts.push(trimmed.to_string());
+                    }
+                }
+            }
+
+            if parts.is_empty() {
+                None
+            } else {
+                Some(parts.join("\n"))
+            }
+        }
+        _ => None,
+    }
+}
 
 /// Create a simple OCR request for document recognition
 pub fn create_ocr_request(
