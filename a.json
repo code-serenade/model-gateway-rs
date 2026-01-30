@@ -1,0 +1,394 @@
+{
+  "metrics": [
+    {
+      "value": "175 cm",
+      "is_abnormal": false,
+      "metric_code": "height",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "63 Kg",
+      "is_abnormal": false,
+      "metric_code": "weight",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "20.57 kg/㎡",
+      "is_abnormal": false,
+      "metric_code": "bmi",
+      "reference_range": "18.5-23.99",
+      "abnormality_note": null
+    },
+    {
+      "value": "128 mmHg",
+      "is_abnormal": false,
+      "metric_code": "systolic_bp",
+      "reference_range": "90-139",
+      "abnormality_note": null
+    },
+    {
+      "value": "83 mmHg",
+      "is_abnormal": false,
+      "metric_code": "diastolic_bp",
+      "reference_range": "60-89",
+      "abnormality_note": null
+    },
+    {
+      "value": "5.03 ×10^12/L",
+      "is_abnormal": false,
+      "metric_code": "rbc",
+      "reference_range": "4.3-5.8",
+      "abnormality_note": null
+    },
+    {
+      "value": "158.00 g/L",
+      "is_abnormal": false,
+      "metric_code": "hemoglobin",
+      "reference_range": "130-175",
+      "abnormality_note": null
+    },
+    {
+      "value": "0.5 %",
+      "is_abnormal": false,
+      "metric_code": "hematocrit",
+      "reference_range": "0.40-0.50",
+      "abnormality_note": null
+    },
+    {
+      "value": "92.80 fl",
+      "is_abnormal": false,
+      "metric_code": "mcv",
+      "reference_range": "82-100",
+      "abnormality_note": null
+    },
+    {
+      "value": "31.40 pg",
+      "is_abnormal": false,
+      "metric_code": "mch",
+      "reference_range": "27-34",
+      "abnormality_note": null
+    },
+    {
+      "value": "338 g/L",
+      "is_abnormal": false,
+      "metric_code": "mchc",
+      "reference_range": "316-354",
+      "abnormality_note": null
+    },
+    {
+      "value": "12.90 %",
+      "is_abnormal": false,
+      "metric_code": "rdw_cv",
+      "reference_range": "11-16",
+      "abnormality_note": null
+    },
+    {
+      "value": "41.60 fl",
+      "is_abnormal": false,
+      "metric_code": "rdw_sd",
+      "reference_range": "35-56",
+      "abnormality_note": null
+    },
+    {
+      "value": "7.03 ×10^9/L",
+      "is_abnormal": false,
+      "metric_code": "wbc",
+      "reference_range": "3.5-9.5",
+      "abnormality_note": null
+    },
+    {
+      "value": "46.400 %",
+      "is_abnormal": false,
+      "metric_code": "neutrophil_percent",
+      "reference_range": "40-75",
+      "abnormality_note": null
+    },
+    {
+      "value": "3.260 ×10^9/L",
+      "is_abnormal": false,
+      "metric_code": "neutrophil_count",
+      "reference_range": "1.8-6.3",
+      "abnormality_note": null
+    },
+    {
+      "value": "42.200 %",
+      "is_abnormal": false,
+      "metric_code": "lymphocyte_percent",
+      "reference_range": "20-50",
+      "abnormality_note": null
+    },
+    {
+      "value": "2.970 ×10^9/L",
+      "is_abnormal": false,
+      "metric_code": "lymphocyte_count",
+      "reference_range": "1.1-3.2",
+      "abnormality_note": null
+    },
+    {
+      "value": "8.000 %",
+      "is_abnormal": false,
+      "metric_code": "monocyte_percent",
+      "reference_range": "3-10",
+      "abnormality_note": null
+    },
+    {
+      "value": "0.560 ×10^9/L",
+      "is_abnormal": false,
+      "metric_code": "monocyte_count",
+      "reference_range": "0.1-0.6",
+      "abnormality_note": null
+    },
+    {
+      "value": "2.600 %",
+      "is_abnormal": false,
+      "metric_code": "eosinophil_percent",
+      "reference_range": "0.5-5.0",
+      "abnormality_note": null
+    },
+    {
+      "value": "0.180 ×10^9/L",
+      "is_abnormal": false,
+      "metric_code": "eosinophil_count",
+      "reference_range": "0.02-0.50",
+      "abnormality_note": null
+    },
+    {
+      "value": "0.800 %",
+      "is_abnormal": false,
+      "metric_code": "basophil_percent",
+      "reference_range": "0-1.0",
+      "abnormality_note": null
+    },
+    {
+      "value": "0.060 ×10^9/L",
+      "is_abnormal": false,
+      "metric_code": "basophil_count",
+      "reference_range": "0.00-0.06",
+      "abnormality_note": null
+    },
+    {
+      "value": "254.0 ×10^9/L",
+      "is_abnormal": false,
+      "metric_code": "platelet_count",
+      "reference_range": "100-350",
+      "abnormality_note": null
+    },
+    {
+      "value": "9.80 fl",
+      "is_abnormal": false,
+      "metric_code": "mpv",
+      "reference_range": "6.5-12",
+      "abnormality_note": null
+    },
+    {
+      "value": "11.70 fl",
+      "is_abnormal": false,
+      "metric_code": "pdw",
+      "reference_range": "10-18",
+      "abnormality_note": null
+    },
+    {
+      "value": "0.2300 %",
+      "is_abnormal": false,
+      "metric_code": "pct",
+      "reference_range": "0.108-0.282",
+      "abnormality_note": null
+    },
+    {
+      "value": "黄色",
+      "is_abnormal": false,
+      "metric_code": "urine_color",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "清晰透明",
+      "is_abnormal": false,
+      "metric_code": "urine_clarity",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "1.025",
+      "is_abnormal": false,
+      "metric_code": "urine_specific_gravity",
+      "reference_range": "1.005-1.030",
+      "abnormality_note": null
+    },
+    {
+      "value": "6.00",
+      "is_abnormal": false,
+      "metric_code": "urine_ph",
+      "reference_range": "5.0-8.0",
+      "abnormality_note": null
+    },
+    {
+      "value": "-",
+      "is_abnormal": false,
+      "metric_code": "urine_leukocyte",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "-",
+      "is_abnormal": false,
+      "metric_code": "urine_erythrocyte",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "-",
+      "is_abnormal": false,
+      "metric_code": "urine_nitrite",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "-",
+      "is_abnormal": false,
+      "metric_code": "urine_ketone",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "-",
+      "is_abnormal": false,
+      "metric_code": "urine_bilirubin",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "Normal",
+      "is_abnormal": false,
+      "metric_code": "urine_urobilinogen",
+      "reference_range": "Normal",
+      "abnormality_note": null
+    },
+    {
+      "value": "-",
+      "is_abnormal": false,
+      "metric_code": "urine_protein",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "-",
+      "is_abnormal": false,
+      "metric_code": "urine_glucose",
+      "reference_range": null,
+      "abnormality_note": null
+    },
+    {
+      "value": "0.6 mmol/L",
+      "is_abnormal": true,
+      "metric_code": "urine_vitamin_c",
+      "reference_range": "0.0-0.0",
+      "abnormality_note": "Vitamin C detected; should be absent"
+    },
+    {
+      "value": "24.3 U/L",
+      "is_abnormal": false,
+      "metric_code": "alt",
+      "reference_range": "5-40",
+      "abnormality_note": null
+    },
+    {
+      "value": "73.9 g/L",
+      "is_abnormal": false,
+      "metric_code": "total_protein",
+      "reference_range": "60-83",
+      "abnormality_note": null
+    },
+    {
+      "value": "50.2 g/L",
+      "is_abnormal": false,
+      "metric_code": "albumin",
+      "reference_range": "37-53",
+      "abnormality_note": null
+    },
+    {
+      "value": "15.84 umol/L",
+      "is_abnormal": false,
+      "metric_code": "total_bilirubin",
+      "reference_range": "1.7-21",
+      "abnormality_note": null
+    },
+    {
+      "value": "6.43 umol/L",
+      "is_abnormal": false,
+      "metric_code": "direct_bilirubin",
+      "reference_range": "0.0-6.8",
+      "abnormality_note": null
+    },
+    {
+      "value": "3.42 mmol/L",
+      "is_abnormal": false,
+      "metric_code": "total_cholesterol",
+      "reference_range": "0-5.2",
+      "abnormality_note": null
+    },
+    {
+      "value": "0.90 mmol/L",
+      "is_abnormal": false,
+      "metric_code": "triglycerides",
+      "reference_range": "0.45-1.81",
+      "abnormality_note": null
+    },
+    {
+      "value": "4.19 mmol/L",
+      "is_abnormal": false,
+      "metric_code": "urea",
+      "reference_range": "2.82-8.2",
+      "abnormality_note": null
+    },
+    {
+      "value": "79.9 umol/L",
+      "is_abnormal": false,
+      "metric_code": "creatinine",
+      "reference_range": "59-104",
+      "abnormality_note": null
+    },
+    {
+      "value": "301 umol/L",
+      "is_abnormal": false,
+      "metric_code": "uric_acid",
+      "reference_range": "210-430",
+      "abnormality_note": null
+    },
+    {
+      "value": "5.07 mmol/L",
+      "is_abnormal": false,
+      "metric_code": "fasting_glucose",
+      "reference_range": "3.9-6.1",
+      "abnormality_note": null
+    },
+    {
+      "value": "阴性",
+      "is_abnormal": false,
+      "metric_code": "h_pylori_antibody",
+      "reference_range": "阴性",
+      "abnormality_note": null
+    }
+  ],
+  "diagnoses": [
+    "Benign prostatic hyperplasia with calcification",
+    "Prostate cyst",
+    "Chronic gingivitis",
+    "Post‑operative duodenal ulcer"
+  ],
+  "patient_info": {
+    "age": "44",
+    "name": "游舒翔",
+    "gender": "male",
+    "check_date": "2025-12-14"
+  },
+  "recommendations": [
+    "Limit smoking, alcohol and spicy foods; maintain good genital hygiene; monitor urinary frequency, difficulty, and nocturia; repeat prostate evaluation every six months.",
+    "For prostate cyst: regular follow‑up; if cyst enlarges causing urinary obstruction or infection, seek specialist treatment.",
+    "Oral hygiene: regular scaling and removal of plaque/tartar; maintain good mouth hygiene to control chronic gingivitis.",
+    "Follow post‑operative instructions for duodenal ulcer and attend regular follow‑up examinations.",
+    "Annual comprehensive health check‑up is recommended."
+  ]
+}

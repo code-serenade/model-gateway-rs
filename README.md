@@ -1,21 +1,18 @@
 # model-gateway-rs
 
-**model-gateway-rs** is a Rust library designed as a unified gateway for interacting with various machine learning model backends. It provides a clean abstraction over different model clients (e.g., OpenAI, LLaMA, Gemini) so you can integrate multiple models through a single consistent interface.
+**model-gateway-rs** is a Rust library that provides a minimal, LLM-centric interface with concrete implementations per provider.
 
 ## Features
-- Unified trait-based API for model inference
-- Supports text generation, embeddings, vision models (extensible)
-- Easy to plug in new model clients (OpenAI, custom LLMs, etc.)
+- Minimal `Llm` trait with `chat_once` and `chat_stream`
+- Provider-specific implementations (OpenAI Responses, Ollama)
 - Async-friendly, built with `async-trait`
-- Suitable for integration into larger systems (e.g., agents, API servers)
 
 ## Directory structure
 ```
 src/
-├── clients/      # Concrete client implementations (e.g., OpenAI)
-├── sdk/          # High-level SDK for external usage
-├── traits/       # Core model traits (text, embed, vision)
-├── types/        # Shared types (input/output data structures)
+├── llm/          # LLM trait + provider implementations
+├── model/        # Shared request/response data structures
+├── types/        # Shared types
 └── lib.rs        # Library entry point
 ```
 
@@ -25,19 +22,25 @@ Add to your `Cargo.toml`:
 model-gateway = { git = "https://github.com/code-serenade/model-gateway-rs" }
 ```
 
-Example:
+Example (Ollama):
 ```rust
-use model_gateway::traits::text::TextGeneration;
+use model_gateway_rs::{
+    llm::{ollama::OllamaLlm, Llm},
+    model::llm::{ChatMessage, LlmInput},
+};
 
-async fn run_inference(client: impl TextGeneration) {
-    let prompt = TextPrompt {
-        prompt: "Hello, world!".to_string(),
-        system_prompt: None,
-        temperature: None,
-        top_p: None,
+async fn run_inference() -> Result<(), Box<dyn std::error::Error>> {
+    let llm = OllamaLlm::new("http://127.0.0.1:11434/api/", "llama3")?;
+    let input = LlmInput {
+        messages: vec![
+            ChatMessage::system("You are a helpful assistant."),
+            ChatMessage::user("Hello, world!"),
+        ],
+        max_tokens: Some(128),
     };
-    let result = client.infer_text(prompt).await.unwrap();
-    println!("Result: {}", result.content);
+    let result = llm.chat_once(input).await?;
+    println!("{}", result.get_content());
+    Ok(())
 }
 ```
 

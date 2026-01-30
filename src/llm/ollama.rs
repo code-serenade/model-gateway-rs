@@ -3,20 +3,20 @@ use toolcraft_request::{ByteStream, HeaderMap, Request};
 
 use crate::{
     error::Result,
+    llm::Llm,
     model::{
-        llm::LlmInput,
+        llm::{LlmInput, LlmOutput},
         ollama::{OllamaChatOptions, OllamaChatRequest, OllamaChatResponse},
     },
-    sdk::ModelSDK,
 };
 
-/// ChatCompletion client using your wrapped Request.
-pub struct OllamaSdk {
+/// Ollama chat client using your wrapped Request.
+pub struct OllamaLlm {
     request: Request,
     model: String,
 }
 
-impl OllamaSdk {
+impl OllamaLlm {
     pub fn new(base_url: &str, model: &str) -> Result<Self> {
         let mut request = Request::new()?;
         request.set_base_url(base_url)?;
@@ -32,12 +32,8 @@ impl OllamaSdk {
 }
 
 #[async_trait]
-impl ModelSDK for OllamaSdk {
-    type Input = LlmInput;
-    type Output = OllamaChatResponse;
-
-    /// Send a chat request and get full response.
-    async fn chat_once(&self, input: Self::Input) -> Result<Self::Output> {
+impl Llm for OllamaLlm {
+    async fn chat_once(&self, input: LlmInput) -> Result<LlmOutput> {
         let options = OllamaChatOptions {
             num_predict: input.max_tokens,
             temperature: None,
@@ -51,11 +47,10 @@ impl ModelSDK for OllamaSdk {
         let payload = serde_json::to_value(body)?;
         let response = self.request.post("chat", &payload, None).await?;
         let json: OllamaChatResponse = response.json().await?;
-        Ok(json)
+        Ok(json.into())
     }
 
-    /// Send a chat request and get response stream (SSE).
-    async fn chat_stream(&self, input: Self::Input) -> Result<ByteStream> {
+    async fn chat_stream(&self, input: LlmInput) -> Result<ByteStream> {
         let options = OllamaChatOptions {
             num_predict: input.max_tokens,
             temperature: None,

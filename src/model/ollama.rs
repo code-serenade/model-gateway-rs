@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::model::llm::ChatMessage;
+use crate::model::llm::{ChatMessage, LlmOutput};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct OllamaChatOptions {
@@ -38,5 +38,15 @@ pub struct OllamaChatResponse {
 impl OllamaChatResponse {
     pub fn first_message(&self) -> String {
         self.message.content.clone()
+    }
+}
+
+impl From<OllamaChatResponse> for LlmOutput {
+    fn from(response: OllamaChatResponse) -> Self {
+        let usage = response.prompt_eval_count.zip(response.eval_count).map(|(p, c)| p + c);
+        LlmOutput {
+            message: Some(response.message),
+            usage,
+        }
     }
 }
