@@ -1,18 +1,18 @@
 # model-gateway-rs
 
-**model-gateway-rs** is a Rust library that provides a minimal, LLM-centric interface with concrete implementations per provider.
+**model-gateway-rs** is a Rust library that provides a minimal, LLM-centric interface with concrete implementations per provider, while keeping vision model data structures for future use.
 
 ## Features
 - Minimal `Llm` trait with `chat_once` and `chat_stream`
 - Provider-specific implementations (OpenAI Responses, Ollama)
+- Vision model request/response types (no client implementation yet)
 - Async-friendly, built with `async-trait`
 
 ## Directory structure
 ```
 src/
 ├── llm/          # LLM trait + provider implementations
-├── model/        # Shared request/response data structures
-├── types/        # Shared types
+├── model/        # Shared request/response data structures (includes vision types)
 └── lib.rs        # Library entry point
 ```
 
