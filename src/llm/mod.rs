@@ -1,5 +1,4 @@
-pub mod ollama;
-pub mod openai;
+pub mod chat_completions;
 
 use async_trait::async_trait;
 use toolcraft_request::ByteStream;

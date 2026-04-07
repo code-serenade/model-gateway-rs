@@ -47,7 +47,6 @@ impl From<Vec<ChatMessage>> for ChatMessages {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LlmInput {
     pub messages: Vec<ChatMessage>,
-    pub max_tokens: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

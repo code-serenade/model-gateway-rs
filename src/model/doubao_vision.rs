@@ -384,11 +384,7 @@ fn extract_content_text(value: &Value) -> Option<String> {
         Value::Array(items) => {
             let mut parts = Vec::new();
             for item in items {
-                if let Some(text) = item
-                    .get("text")
-                    .and_then(Value::as_str)
-                    .map(|s| s.trim())
-                {
+                if let Some(text) = item.get("text").and_then(Value::as_str).map(|s| s.trim()) {
                     if !text.is_empty() {
                         parts.push(text.to_string());
                         continue;

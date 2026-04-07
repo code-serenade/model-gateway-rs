@@ -656,6 +656,7 @@ name = "model-gateway-rs"
 version = "0.2.1"
 dependencies = [
  "async-trait",
+ "futures-util",
  "serde",
  "serde_json",
  "thiserror",
