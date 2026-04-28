@@ -12,6 +12,9 @@ pub enum Error {
 
     #[error("config error: {0}")]
     ToolError(#[from] toolcraft_request::error::Error),
+
+    #[error("api error: {0}")]
+    ApiError(String),
 }
 
 pub type Result<T> = core::result::Result<T, Error>;

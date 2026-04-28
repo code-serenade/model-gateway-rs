@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-use toolcraft_request::{ByteStream, HeaderMap, Request};
+use toolcraft_request::{ByteStream, HeaderMap, Request, response::Response};
 
 use crate::{
-    error::Result,
+    error::{Error, Result},
     llm::Llm,
     model::{
         llm::{ChatMessage, ChatMessageContent, LlmInput, LlmOutput},
@@ -98,8 +98,7 @@ impl Llm for ChatCompletionsLlm {
             .request
             .post(&self.chat_completions_endpoint, &payload, None)
             .await?;
-        let json: OpenAiChatResponse = response.json().await?;
-        Ok(json.into())
+        parse_chat_response(response).await
     }
 
     async fn chat_stream(&self, input: LlmInput) -> Result<ByteStream> {
@@ -117,6 +116,29 @@ impl Llm for ChatCompletionsLlm {
             .post_stream(&self.chat_completions_endpoint, &payload, None)
             .await?;
         Ok(response)
+    }
+}
+
+async fn parse_chat_response(response: Response) -> Result<LlmOutput> {
+    let status = response.status();
+    let body = response.text().await?;
+
+    if !status.is_success() {
+        return Err(Error::ApiError(format_error_body(status.as_u16(), &body)));
+    }
+
+    if let Ok(error) = serde_json::from_str::<OpenAiErrorResponse>(&body) {
+        return Err(Error::ApiError(error.to_string()));
+    }
+
+    let json: OpenAiChatResponse = serde_json::from_str(&body)?;
+    Ok(json.into())
+}
+
+fn format_error_body(status: u16, body: &str) -> String {
+    match serde_json::from_str::<OpenAiErrorResponse>(body) {
+        Ok(error) => format!("status={status}, {error}"),
+        Err(_) => format!("status={status}, body={body}"),
     }
 }
 
@@ -148,6 +170,42 @@ struct OpenAiChatRequest {
 struct OpenAiChatResponse {
     choices: Vec<OpenAiChoice>,
     usage: Option<OpenAiUsage>,
+}
+
+#[derive(Debug, Deserialize)]
+struct OpenAiErrorResponse {
+    error: OpenAiError,
+}
+
+impl std::fmt::Display for OpenAiErrorResponse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.error)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct OpenAiError {
+    message: String,
+    #[serde(rename = "type")]
+    kind: Option<String>,
+    param: Option<String>,
+    code: Option<String>,
+}
+
+impl std::fmt::Display for OpenAiError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "message={}", self.message)?;
+        if let Some(kind) = &self.kind {
+            write!(f, ", type={kind}")?;
+        }
+        if let Some(param) = &self.param {
+            write!(f, ", param={param}")?;
+        }
+        if let Some(code) = &self.code {
+            write!(f, ", code={code}")?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Deserialize)]
