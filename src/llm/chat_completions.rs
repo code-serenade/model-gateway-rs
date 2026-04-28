@@ -6,12 +6,13 @@ use crate::{
     error::Result,
     llm::Llm,
     model::{
-        llm::{ChatMessage, LlmInput, LlmOutput},
+        llm::{ChatMessage, ChatMessageContent, LlmInput, LlmOutput},
         role::Role,
     },
 };
 
-const CHAT_COMPLETIONS_ENDPOINT: &str = "v1/chat/completions";
+const ROOT_CHAT_COMPLETIONS_ENDPOINT: &str = "v1/chat/completions";
+const VERSIONED_CHAT_COMPLETIONS_ENDPOINT: &str = "chat/completions";
 
 /// Standard chat completions client.
 ///
@@ -22,8 +23,10 @@ const CHAT_COMPLETIONS_ENDPOINT: &str = "v1/chat/completions";
 pub struct ChatCompletionsLlm {
     request: Request,
     model: String,
+    chat_completions_endpoint: String,
     default_max_tokens: Option<u32>,
     default_temperature: Option<f32>,
+    default_reasoning_effort: Option<String>,
 }
 
 impl ChatCompletionsLlm {
@@ -43,8 +46,10 @@ impl ChatCompletionsLlm {
         Ok(Self {
             request,
             model: model.to_string(),
+            chat_completions_endpoint: default_chat_completions_endpoint(base_url).to_string(),
             default_max_tokens: None,
             default_temperature: None,
+            default_reasoning_effort: None,
         })
     }
 
@@ -65,6 +70,16 @@ impl ChatCompletionsLlm {
         self.default_temperature = temperature;
         self
     }
+
+    pub fn with_reasoning_effort(mut self, reasoning_effort: Option<&str>) -> Self {
+        self.default_reasoning_effort = reasoning_effort.map(str::to_string);
+        self
+    }
+
+    pub fn with_chat_completions_endpoint(mut self, endpoint: impl Into<String>) -> Self {
+        self.chat_completions_endpoint = endpoint.into().trim_start_matches('/').to_string();
+        self
+    }
 }
 
 #[async_trait]
@@ -75,12 +90,13 @@ impl Llm for ChatCompletionsLlm {
             messages: input.messages,
             temperature: self.default_temperature,
             max_tokens: self.default_max_tokens,
+            reasoning_effort: self.default_reasoning_effort.clone(),
             stream: Some(false),
         };
         let payload = serde_json::to_value(body)?;
         let response = self
             .request
-            .post(CHAT_COMPLETIONS_ENDPOINT, &payload, None)
+            .post(&self.chat_completions_endpoint, &payload, None)
             .await?;
         let json: OpenAiChatResponse = response.json().await?;
         Ok(json.into())
@@ -92,14 +108,25 @@ impl Llm for ChatCompletionsLlm {
             messages: input.messages,
             temperature: self.default_temperature,
             max_tokens: self.default_max_tokens,
+            reasoning_effort: self.default_reasoning_effort.clone(),
             stream: Some(true),
         };
         let payload = serde_json::to_value(body)?;
         let response = self
             .request
-            .post_stream(CHAT_COMPLETIONS_ENDPOINT, &payload, None)
+            .post_stream(&self.chat_completions_endpoint, &payload, None)
             .await?;
         Ok(response)
+    }
+}
+
+fn default_chat_completions_endpoint(base_url: &str) -> &'static str {
+    let base_url = base_url.trim_end_matches('/');
+
+    if base_url.ends_with("/v1") || base_url.ends_with("/api/v1") || base_url.ends_with("/api/v3") {
+        VERSIONED_CHAT_COMPLETIONS_ENDPOINT
+    } else {
+        ROOT_CHAT_COMPLETIONS_ENDPOINT
     }
 }
 
@@ -111,6 +138,8 @@ struct OpenAiChatRequest {
     temperature: Option<f32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     max_tokens: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    reasoning_effort: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     stream: Option<bool>,
 }
@@ -129,7 +158,7 @@ struct OpenAiChoice {
 #[derive(Debug, Deserialize)]
 struct OpenAiMessage {
     role: Role,
-    content: String,
+    content: Option<ChatMessageContent>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -145,12 +174,41 @@ impl From<OpenAiChatResponse> for LlmOutput {
             .next()
             .map(|choice| ChatMessage {
                 role: choice.message.role,
-                content: choice.message.content,
+                content: choice.message.content.unwrap_or_default(),
             });
 
         LlmOutput {
             message,
             usage: response.usage.and_then(|usage| usage.total_tokens),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn root_base_url_uses_openai_v1_chat_completions_path() {
+        assert_eq!(
+            default_chat_completions_endpoint("https://api.openai.com"),
+            "v1/chat/completions"
+        );
+    }
+
+    #[test]
+    fn versioned_base_url_uses_chat_completions_path() {
+        assert_eq!(
+            default_chat_completions_endpoint("https://api.openai.com/v1"),
+            "chat/completions"
+        );
+        assert_eq!(
+            default_chat_completions_endpoint("https://ark.cn-beijing.volces.com/api/v3"),
+            "chat/completions"
+        );
+        assert_eq!(
+            default_chat_completions_endpoint("https://operator.las.cn-beijing.volces.com/api/v1"),
+            "chat/completions"
+        );
     }
 }

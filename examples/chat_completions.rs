@@ -7,7 +7,7 @@ use model_gateway_rs::{
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let base_url = "http://127.0.0.1:11434";
-    let model = "gpt-oss";
+    let model = "gemma4:26b";
 
     let llm = ChatCompletionsLlm::new(base_url, model, None)?
         .with_temperature(Some(0.7))
